@@ -1,0 +1,54 @@
+  {
+    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "serviceBusName": {
+            "type": "string"
+        },
+        "webapp": {
+            "type": "string"
+        },
+        "sharedKeyName": {
+            "type": "string"
+        },
+        "sharedKey": {
+            "type": "string"
+        },
+        "hybridConnectionName": {
+            "type": "string"
+        },
+        "listenerHostname": {
+            "type": "string"
+        },
+        "listenerHostPort": {
+            "type": "string"
+        }
+    },
+    "resources": [ 
+    {
+        "apiVersion": "2017-04-01",
+        "type": "Microsoft.Relay/namespaces/hybridConnections",
+        "name": "[concat(parameters('serviceBusName'), '/', parameters('hybridConnectionName'))]",
+        "properties": {
+            "requiresClientAuthorization": true,
+            "userMetadata": "[concat('[{\"key\":\"endpoint\",\"value\":\"', parameters('listenerHostname'), ':', parameters('listenerHostPort'), '\"}]')]"
+        }
+    },
+    {
+        "name": "[concat(parameters('webapp'), '/', parameters('serviceBusName'), '/', parameters('hybridConnectionName'))]", 
+        "type": "Microsoft.Web/sites/hybridConnectionNamespaces/relays",
+        "location": "[resourceGroup().location]",
+        "apiVersion": "2018-02-01",
+        "properties": {
+            "serviceBusNamespace": "[parameters('serviceBusName')]", 
+            "relayName": "[parameters('hybridConnectionName')]",
+            "relayArmUri": "[concat('/subscriptions/', subscription().subscriptionId, '/resourceGroups/', resourceGroup().name, '/providers/Microsoft.Relay/namespaces/', parameters('serviceBusName'), '/HybridConnections/', parameters('hybridConnectionName'))]",
+            "hostname": "[parameters('listenerHostname')]", 
+            "port": "[parameters('listenerHostPort')]",
+            "sendKeyName": "[parameters('sharedKeyName')]", 
+            "sendKeyValue": "[parameters('sharedKey')]", 
+            "serviceBusSuffix": ".servicebus.windows.net"
+        }
+    }
+    ]
+}

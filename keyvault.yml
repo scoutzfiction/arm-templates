@@ -1,0 +1,14 @@
+parameters:
+  resourceGroup: ''
+  keyvault: '',
+
+steps:
+- task: AzureCLI@1
+  displayName: 'Azure CLI'
+  inputs:
+    azureSubscription: '${{ parameters.resourceGroup }}' 
+    scriptLocation: inlineScript
+    inlineScript:  az keyvault secret set --name "${{ parameters.resourceGroup }}" --vault-name {{ parameters.keyvault }} --value "$(servicePrincipalKey)"
+
+    addSpnToEnvironment: true
+    
