@@ -1,0 +1,25 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "ipSubnetsAllowed": {
+            "type": "array"
+        },
+        "webapp": {
+            "type": "string"
+        },
+        "slot": {
+            "type": "string"
+        }
+    },
+    "resources": [
+        {
+            "apiVersion": "2016-08-01",
+            "type": "Microsoft.Web/sites/slots/config",
+            "name": "[concat(parameters('webapp'), '/',parameters('slot'),'/','web')]",
+            "properties": {
+                "ipSecurityRestrictions": "[parameters('ipSubnetsAllowed')]"
+            }
+        }
+    ]
+}
