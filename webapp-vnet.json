@@ -1,0 +1,32 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "vnetName": {
+            "type": "string"
+        },
+        "vnetId":{
+            "type": "string"
+        },
+        "subnetName":{
+            "type": "string"
+        },
+        "webapp": {
+            "type": "string"
+        }
+    }, 
+    "variables": {
+        "vnet": "[concat(parameters('vnetId'),'_',parameters('vnetName'))]"
+      },
+    "resources": [ {
+        "type": "Microsoft.Web/sites/virtualNetworkConnections",
+        "apiVersion": "2016-08-01",
+        "name": "[concat(parameters('webapp'), '/',variables('vnet'))]",
+        "location": "[resourceGroup().location]",
+    
+        "properties": {
+            "vnetResourceId": "[resourceId('Microsoft.Network/virtualNetworks/subnets', parameters('vnetName'), parameters('subnetName'))]"
+        }
+    }]
+
+}
