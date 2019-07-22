@@ -1,0 +1,56 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "serviceBusName": {
+            "type": "string"
+        },
+        "webapp": {
+            "type": "string"
+        },
+        "sharedKeyName": {
+            "type": "string"
+        },
+        "sharedKey": {
+            "type": "string"
+        },
+        "hybridConnectionEndpoints": {
+            "type": "array"
+        }
+    },
+    "resources": [ 
+    {
+        "apiVersion": "2017-04-01",
+        "type": "Microsoft.Relay/namespaces/hybridConnections",
+        "name": "[concat(parameters('serviceBusName'), '/', parameters('hybridConnectionEndpoints')[copyIndex()].name)]",
+        "copy": {
+            "name": "hybridConnectionEndpoints",
+            "count": "[length(parameters('hybridConnectionEndpoints'))]"
+          },
+        "properties": {
+            "requiresClientAuthorization": true,
+            "userMetadata": "[concat('[{\"key\":\"endpoint\",\"value\":\"', parameters('hybridConnectionEndpoints')[copyIndex()].endpoint, ':', parameters('hybridConnectionEndpoints')[copyIndex()].port, '\"}]')]"
+        }
+    },
+    {
+        "apiVersion": "2018-02-01",
+        "location": "[resourceGroup().location]",
+        "name": "[concat(parameters('webapp'), '/', parameters('serviceBusName'), '/', parameters('hybridConnectionEndpoints')[copyIndex()].name)]", 
+        "type": "Microsoft.Web/sites/hybridConnectionNamespaces/relays",
+        "copy": {
+            "name": "hybridConnectionEndpoints",
+            "count": "[length(parameters('hybridConnectionEndpoints'))]"
+          },
+        "properties": {
+            "serviceBusNamespace": "[parameters('serviceBusName')]", 
+            "relayName": "[parameters('hybridConnectionEndpoints')[copyIndex()].name]",
+            "relayArmUri": "[concat('/subscriptions/', subscription().subscriptionId, '/resourceGroups/', resourceGroup().name, '/providers/Microsoft.Relay/namespaces/', parameters('serviceBusName'), '/HybridConnections/', parameters('hybridConnectionEndpoints')[copyIndex()].name)]",
+            "hostname": "[parameters('hybridConnectionEndpoints')[copyIndex()].endpoint]", 
+            "port": "[parameters('hybridConnectionEndpoints')[copyIndex()].port]",
+            "sendKeyName": "[parameters('sharedKeyName')]", 
+            "sendKeyValue": "[parameters('sharedKey')]", 
+            "serviceBusSuffix": ".servicebus.windows.net"
+        }
+    }
+    ]
+}
