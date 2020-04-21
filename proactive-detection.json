@@ -1,0 +1,97 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "applicationInsights": {
+            "type": "string"
+        },
+        "emailNotificationAddresses": {
+            "type": "string"
+        },
+        "enable": {
+            "type": "bool"
+        }
+    },
+    "variables": {
+        "applicationInsightsLocation": "South Central US"
+    },
+    "resources": [
+        {
+            "apiVersion": "2018-05-01-preview",
+            "type": "Microsoft.Insights/components",
+            "name": "[parameters('applicationInsights')]",
+            "location": "[variables('applicationInsightsLocation')]",
+            "properties": {
+                "ApplicationId": "[parameters('applicationInsights')]"
+            },
+            "resources": [
+                {
+                    "comments": "Smart detection configuration to notify the app team",
+                    "apiVersion": "2018-05-01-preview",
+                    "name": "slowpageloadtime",
+                    "type": "ProactiveDetectionConfigs",
+                    "location": "[variables('applicationInsightsLocation')]",
+                    "properties": {
+                        "name": "slowpageloadtime",
+                        "sendEmailsToSubscriptionOwners": false,
+                        "customEmails": "[parameters('emailNotificationAddresses')]",
+                        "enabled": "[parameters('enable')]"
+                    }
+                },
+                {
+                    "comments": "Smart detection configuration to notify the app team",
+                    "apiVersion": "2018-05-01-preview",
+                    "name": "slowserverresponsetime",
+                    "type": "ProactiveDetectionConfigs",
+                    "location": "[variables('applicationInsightsLocation')]",
+                    "properties": {
+                        "name": "slowserverresponsetime",
+                        "sendEmailsToSubscriptionOwners": false,
+                        "customEmails": "[parameters('emailNotificationAddresses')]",
+                        "enabled": "[parameters('enable')]"
+                    }
+                },
+                {
+                    "comments": "Smart detection configuration to notify the app team",
+                    "apiVersion": "2018-05-01-preview",
+                    "name": "longdependencyduration",
+                    "type": "ProactiveDetectionConfigs",
+                    "location": "[variables('applicationInsightsLocation')]",
+                    "properties": {
+                        "name": "longdependencyduration",
+                        "sendEmailsToSubscriptionOwners": false,
+                        "customEmails": "[parameters('emailNotificationAddresses')]",
+                        "enabled": "[parameters('enable')]"
+                    }
+                },
+                {
+                    "comments": "Smart detection configuration to notify the app team",
+                    "apiVersion": "2018-05-01-preview",
+                    "name": "degradationinserverresponsetime",
+                    "type": "ProactiveDetectionConfigs",
+                    "location": "[variables('applicationInsightsLocation')]",
+                    "properties": {
+                        "name": "degradationinserverresponsetime",
+                        "sendEmailsToSubscriptionOwners": false,
+                        "customEmails": "[parameters('emailNotificationAddresses')]",
+                        "enabled": "[parameters('enable')]"
+                    }
+                },
+                {
+                    "comments": "Smart detection configuration to notify the app team",
+                    "apiVersion": "2018-05-01-preview",
+                    "name": "degradationindependencyduration",
+                    "type": "ProactiveDetectionConfigs",
+                    "location": "[variables('applicationInsightsLocation')]",
+                    "properties": {
+                        "name": "degradationindependencyduration",
+                        "sendEmailsToSubscriptionOwners": false,
+                        "customEmails": "[parameters('emailNotificationAddresses')]",
+                        "enabled": "[parameters('enable')]"
+                    }
+                }
+            ]
+        }
+
+    ]
+}
