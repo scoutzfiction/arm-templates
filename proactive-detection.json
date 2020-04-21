@@ -6,7 +6,7 @@
             "type": "string"
         },
         "emailNotificationAddresses": {
-            "type": "string"
+            "type": "array"
         },
         "enable": {
             "type": "bool"
@@ -17,12 +17,14 @@
     },
     "resources": [
         {
-            "apiVersion": "2018-05-01-preview",
             "type": "Microsoft.Insights/components",
             "name": "[parameters('applicationInsights')]",
             "location": "[variables('applicationInsightsLocation')]",
+            "apiVersion": "2015-05-01",
+            "kind": "web",
             "properties": {
-                "ApplicationId": "[parameters('applicationInsights')]"
+                "ApplicationId": "[parameters('applicationInsights')]",
+                "Application_Type": "web"
             },
             "resources": [
                 {
@@ -31,6 +33,9 @@
                     "name": "slowpageloadtime",
                     "type": "ProactiveDetectionConfigs",
                     "location": "[variables('applicationInsightsLocation')]",
+                    "dependsOn": [
+                        "[resourceId('Microsoft.Insights/components', parameters('applicationInsights'))]"
+                    ],
                     "properties": {
                         "name": "slowpageloadtime",
                         "sendEmailsToSubscriptionOwners": false,
@@ -44,6 +49,9 @@
                     "name": "slowserverresponsetime",
                     "type": "ProactiveDetectionConfigs",
                     "location": "[variables('applicationInsightsLocation')]",
+                    "dependsOn": [
+                        "[resourceId('Microsoft.Insights/components', parameters('applicationInsights'))]"
+                    ],
                     "properties": {
                         "name": "slowserverresponsetime",
                         "sendEmailsToSubscriptionOwners": false,
@@ -57,6 +65,9 @@
                     "name": "longdependencyduration",
                     "type": "ProactiveDetectionConfigs",
                     "location": "[variables('applicationInsightsLocation')]",
+                    "dependsOn": [
+                        "[resourceId('Microsoft.Insights/components', parameters('applicationInsights'))]"
+                    ],
                     "properties": {
                         "name": "longdependencyduration",
                         "sendEmailsToSubscriptionOwners": false,
@@ -70,6 +81,9 @@
                     "name": "degradationinserverresponsetime",
                     "type": "ProactiveDetectionConfigs",
                     "location": "[variables('applicationInsightsLocation')]",
+                    "dependsOn": [
+                        "[resourceId('Microsoft.Insights/components', parameters('applicationInsights'))]"
+                    ],
                     "properties": {
                         "name": "degradationinserverresponsetime",
                         "sendEmailsToSubscriptionOwners": false,
@@ -83,6 +97,9 @@
                     "name": "degradationindependencyduration",
                     "type": "ProactiveDetectionConfigs",
                     "location": "[variables('applicationInsightsLocation')]",
+                    "dependsOn": [
+                        "[resourceId('Microsoft.Insights/components', parameters('applicationInsights'))]"
+                    ],
                     "properties": {
                         "name": "degradationindependencyduration",
                         "sendEmailsToSubscriptionOwners": false,
