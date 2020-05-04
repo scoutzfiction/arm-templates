@@ -1,0 +1,80 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "appServicePlan": {
+            "type": "string"
+        },
+        "minimumCapacity": {
+            "type": "int"
+        },
+        "maximumCapacity": {
+            "type": "int"
+        }
+    },
+    "resources": [
+        {
+            "comments": "Auto scaling rules for web app",
+            "name": "[concat(parameters('appServicePlan'), '-autoscale')]",
+            "type": "Microsoft.Insights/autoscaleSettings",
+            "apiVersion": "2015-04-01",
+            "location": "[resourceGroup().location]",
+            "properties": {
+                "name": "[concat(parameters('appServicePlan'), '-autoscale')]",
+                "enabled": true,
+                "targetResourceUri": "[resourceId('Microsoft.Web/serverFarms/', parameters('appServicePlan'))]",
+                "profiles": [
+                    {
+                        "name": "Auto created scale condition",
+                        "capacity": {
+                            "minimum": "[parameters('minimumCapacity')]",
+                            "maximum": "[parameters('maximumCapacity')]",
+                            "default": "[parameters('minimumCapacity')]"
+                        },
+                        "rules": [
+                            {
+                                "metricTrigger": {
+                                    "metricName": "CpuPercentage",
+                                    "metricNamespace": "microsoft.web/serverfarms",
+                                    "metricResourceUri": "[resourceId('Microsoft.Web/serverFarms/', parameters('appServicePlan'))]",
+                                    "operator": "GreaterThan",
+                                    "statistic": "Average",
+                                    "threshold": 25,
+                                    "timeAggregation": "Average",
+                                    "timeGrain": "PT1M",
+                                    "timeWindow": "PT5M"
+                                },
+                                "scaleAction": {
+                                    "direction": "Increase",
+                                    "type": "ChangeCount",
+                                    "value": "1",
+                                    "cooldown": "PT1M"
+                                }
+                            },
+                            {
+                                "metricTrigger": {
+                                    "metricName": "CpuPercentage",
+                                    "metricNamespace": "microsoft.web/serverfarms",
+                                    "metricResourceUri": "[resourceId('Microsoft.Web/serverFarms/', parameters('appServicePlan'))]",
+                                    "operator": "LessThan",
+                                    "statistic": "Average",
+                                    "threshold": 25,
+                                    "timeAggregation": "Average",
+                                    "timeGrain": "PT1M",
+                                    "timeWindow": "PT5M"
+                                },
+                                "scaleAction": {
+                                    "direction": "Decrease",
+                                    "type": "ChangeCount",
+                                    "value": "1",
+                                    "cooldown": "PT1M"
+                                }
+                            }
+                        ]
+                    }
+                ]
+            }
+        }
+
+    ]
+}
