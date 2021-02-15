@@ -1,0 +1,51 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "appName": {
+            "type": "string"
+        },
+        "subnetResourceId":{
+            "type": "string"
+        }        
+    }, 
+    "resources": [ 
+        {
+            "comments": "App service resource for application",
+            "type": "Microsoft.Web/sites",
+            "apiVersion": "2018-02-01",
+            "name": "[parameters('appServiceName')]",
+            "kind": "app",
+            "resources": [
+                {
+                    "comments": "VNET Integration Supporting Settings",
+                    "type": "config",
+                    "name": "appsettings",
+                    "apiVersion": "2018-02-01",
+                    "dependsOn": [
+                      "[resourceId('Microsoft.Web/sites', parameters('appServiceName'))]"
+                    ],
+                    "properties": {
+                      "WEBSITE_VNET_ROUTE_ALL": "1",
+                      "WEBSITE_VNET_SUPPORT_DUAL_STACK_SOCKETS": "1"
+                    }
+                },
+                {
+                    "comments": "Virtual network integration",
+                    "name": "virtualNetwork",
+                    "type": "config",
+                    "location": "[variables('location')]",
+                    "apiVersion": "2018-02-01",
+                    "dependsOn": [
+                      "[resourceId('Microsoft.Web/sites', parameters('appServiceName'))]",
+                      "[resourceId('Microsoft.Web/sites/config', parameters('appServiceName'), 'appsettings')]"
+                    ],
+                    "properties": {
+                      "subnetResourceId": "[parameters(subnetResourceId)]",
+                      "isSwift": true
+                    }
+                }
+            ]
+        }
+    ]
+}
