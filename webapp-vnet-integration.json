@@ -41,7 +41,7 @@
 						"[resourceId('Microsoft.Web/sites', parameters('appServiceName'))]"
 					],
 					"properties": {
-						"subnetResourceId": "[parameters(subnetResourceId)]",
+						"subnetResourceId": "[parameters('subnetResourceId')]",
 						"isSwift": true
 					}
 				}
